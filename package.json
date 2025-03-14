@@ -13,7 +13,6 @@
     "@cornerstonejs/core": "^3.0.1",
     "@cornerstonejs/dicom-image-loader": "^3.0.1",
     "@tailwindcss/vite": "^4.0.9",
-    "dicomweb-client": "^0.11.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.0.9"
