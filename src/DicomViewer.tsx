@@ -18,6 +18,8 @@ const DicomViewer = () => {
 
   useEffect(() => {
     if (isFirst.current) {
+      isFirst.current = false;
+
       csInit();
       loaderInit({
         maxWebWorkers: navigator.hardwareConcurrency || 1,
@@ -33,12 +35,11 @@ const DicomViewer = () => {
       };
 
       renderingEngine.enableElement(viewportInput);
-      isFirst.current = false;
     }
   }, []);
 
   useEffect(() => {
-    const initializeCornerstone = async () => {
+    const render = async () => {
       const ctImageIds = [
         "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000000.dcm",
         "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000001.dcm",
@@ -71,10 +72,10 @@ const DicomViewer = () => {
       } else console.log("rendering");
     };
 
-    initializeCornerstone();
+    render();
   }, [viewportRef]);
 
-  return <div ref={viewportRef} className="w-[500px] h-[500px]" />;
+  return <div ref={viewportRef} className="h-[500px] w-[500px]" />;
 };
 
 export default DicomViewer;
