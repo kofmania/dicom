@@ -6,7 +6,7 @@ import {
   RenderingEngine,
 } from "@cornerstonejs/core";
 import { init as loaderInit } from "@cornerstonejs/dicom-image-loader";
-import { ViewportType } from "@cornerstonejs/core/enums";
+import { Events, ViewportType } from "@cornerstonejs/core/enums";
 import {
   init as toolsInit,
   addTool,
@@ -14,19 +14,21 @@ import {
   MagnifyTool,
   ZoomTool,
   PanTool,
+  StackScrollTool,
 } from "@cornerstonejs/tools";
 import { MouseBindings } from "@cornerstonejs/tools/enums";
 
 const engineId = "myEngine";
 const viewportId = "myView";
 const toolGroupId = "myToolGroup";
-const toolNames = [MagnifyTool, ZoomTool, PanTool];
+const toolNames = [MagnifyTool, ZoomTool, PanTool, StackScrollTool];
 
 const DicomTools = () => {
   const viewportRef = useRef<HTMLDivElement>(null);
   const isFirst = useRef(true);
   const rendering = useRef(false);
   const [toolStack, setStackTool] = useState<string[]>([toolNames[0].toolName]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isFirst.current) {
@@ -55,24 +57,26 @@ const DicomTools = () => {
         addTool(tool);
         toolGroup!.addTool(tool.toolName);
       });
+      toolGroup!.setToolActive(StackScrollTool.toolName, {
+        bindings: [
+          {
+            mouseButton: MouseBindings.Wheel,
+          },
+        ],
+      });
       toolGroup!.addViewport(viewportId, engineId);
     }
   }, []);
 
   useEffect(() => {
     const render = async () => {
-      const ctImageIds = [
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000000.dcm",
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000001.dcm",
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000002.dcm",
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000003.dcm",
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000004.dcm",
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000005.dcm",
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000006.dcm",
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000007.dcm",
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000008.dcm",
-        "wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT000009.dcm",
-      ];
+      const ctImageIds = new Array(120)
+        .fill(0)
+        .map(
+          (_, index) =>
+            `wadouri:https://ohif-assets-new.s3.us-east-1.amazonaws.com/ACRIN-Regular/CT+CT+IMAGES/CT${index.toString().padStart(6, "0")}.dcm`
+        );
+
       if (!rendering.current) {
         rendering.current = true;
 
@@ -81,6 +85,17 @@ const DicomTools = () => {
         const viewport = renderingEngine!.getViewport(
           viewportId
         ) as Types.IStackViewport;
+        viewportRef.current?.addEventListener(Events.STACK_NEW_IMAGE, (e) => {
+          setLoading(false);
+          console.log(e);
+        });
+        viewportRef.current?.addEventListener(
+          Events.PRE_STACK_NEW_IMAGE,
+          (e) => {
+            setLoading(true);
+            console.log(e);
+          }
+        );
 
         console.time("setStack");
         await viewport.setStack(ctImageIds);
@@ -132,7 +147,14 @@ const DicomTools = () => {
 
   return (
     <div className="flex-col">
-      <div ref={viewportRef} className="h-[500px] w-[500px]" />
+      <div className="relative">
+        <div ref={viewportRef} className="h-[500px] w-[500px]" />
+        {loading && (
+          <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center border-2 border-amber-300">
+            <span>loading</span>
+          </div>
+        )}
+      </div>
       <div>{buttons}</div>
       <div>{toolStack.join(", ")}</div>
     </div>
