@@ -1,11 +1,11 @@
 import "./App.css";
-import DicomTools from "./DicomTools";
+import PdfView from "./PdfView";
 
 function App() {
   return (
     <>
-      <h1>DICOM test</h1>
-      <DicomTools />
+      <h1 className="mb-4">poc</h1>
+      <PdfView />
     </>
   );
 }
