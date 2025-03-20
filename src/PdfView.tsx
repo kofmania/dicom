@@ -28,7 +28,7 @@ const PdfView = () => {
         <div>
           <Document
             file={"./sample.pdf"}
-            className="mb-1"
+            className="flex-col space-y-2"
             onLoadSuccess={(doc) => {
               setPageCount(doc.numPages);
             }}
