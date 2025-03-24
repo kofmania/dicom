@@ -1,20 +1,31 @@
-const fitToBox = (fitboxW: number, fitboxH: number, w: number, h: number) => {
+const fitToBox = (
+  targetWidth: number,
+  targetHeight: number,
+  sourceWidth: number,
+  sourceHeight: number
+) => {
   let ratio = 1;
-  let fitW = w,
-    fitH = h;
+  let fitWidth = sourceWidth,
+    fitHeight = sourceHeight;
 
-  if (w > fitboxW) {
-    ratio = fitboxW / w;
-    fitH = h * ratio;
+  if (sourceWidth > targetWidth) {
+    ratio = targetWidth / sourceWidth;
+    fitHeight = sourceHeight * ratio;
 
-    if (fitH > fitboxH) {
-      ratio = fitboxH / h;
-      fitW = w * ratio;
-      fitH = h * ratio;
-    } else fitW = w * ratio;
+    if (fitHeight > targetHeight) {
+      ratio = targetHeight / sourceHeight;
+      fitWidth = sourceWidth * ratio;
+      fitHeight = sourceHeight * ratio;
+    } else fitWidth = sourceWidth * ratio;
+  } else {
+    if (sourceHeight > targetHeight) {
+      ratio = targetHeight / sourceHeight;
+      fitWidth = sourceWidth * ratio;
+      fitHeight = sourceHeight * ratio;
+    }
   }
 
-  return [fitW, fitH];
+  return [fitWidth, fitHeight];
 };
 
 export { fitToBox };

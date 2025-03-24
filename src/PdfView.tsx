@@ -8,37 +8,43 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-const PdfView = () => {
+type Props = {
+  data: any;
+};
+
+const PdfView = ({ data }: Props) => {
   const [pageCount, setPageCount] = useState(0);
+
   return (
     <div className="flex space-x-4">
       <div>
-        <h2>pdf view 1</h2>
-        <div>
-          <Document file={"./sample.pdf"} className="mb-1">
-            <Page key={1} pageNumber={1} width={400} />
-            <Page key={2} pageNumber={2} width={400} />
-            <Page key={3} pageNumber={3} width={400} />
-            <Page key={4} pageNumber={4} width={400} />
-          </Document>
-        </div>
-      </div>
-      <div>
-        <h2>pdf view 2</h2>
-        <div>
-          <Document
-            file={"./sample.pdf"}
-            className="flex-col space-y-2"
-            onLoadSuccess={(doc) => {
-              setPageCount(doc.numPages);
-            }}
-          >
-            {pageCount > 0 &&
-              new Array(pageCount)
-                .fill(0)
-                .map((_, index) => <Page key={index} pageNumber={index + 1} />)}
-          </Document>
-        </div>
+        {!data && <h2>pdf view</h2>}
+        {data && (
+          <>
+            <h2>pdf view</h2>
+            <div>
+              <Document
+                file={data}
+                className="flex-col space-y-2"
+                onLoadSuccess={(doc) => {
+                  setPageCount(doc.numPages);
+                }}
+              >
+                {pageCount > 0 &&
+                  new Array(pageCount)
+                    .fill(0)
+                    .map((_, index) => (
+                      <Page
+                        className="border border-amber-300"
+                        key={index}
+                        pageNumber={index + 1}
+                        width={300}
+                      />
+                    ))}
+              </Document>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

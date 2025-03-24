@@ -5,7 +5,7 @@ const PdfTool = () => {
   return (
     <div className="flex">
       <DicomViewer />
-      <PdfBuild className="flex h-[500px] w-[500px] items-center justify-center" />
+      <PdfBuild className="flex items-start justify-center" />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import {
 } from "@cornerstonejs/core";
 import { build } from "./lib/pdf";
 import { useState } from "react";
+import PdfView from "./PdfView";
 
 type Props = {
   className?: string;
@@ -15,6 +16,8 @@ const engineId = "myEngine";
 const viewportId = "myView";
 
 const PdfBuild = (props: Props) => {
+  const [pdf, setPdf] = useState<URL>();
+
   return (
     <div className={props.className}>
       <div>
@@ -43,7 +46,9 @@ const PdfBuild = (props: Props) => {
                 if (windowing) {
                   ctx.drawImage(oriCanvas, 0, 0);
                   const base64 = offscreen.toDataURL("image/jpeg");
-                  build(base64);
+                  const pdf = build(base64);
+                  console.log(pdf);
+                  setPdf(pdf);
                 } else {
                   const imageData = ctx.createImageData(
                     csImage.width,
@@ -59,7 +64,9 @@ const PdfBuild = (props: Props) => {
                   }
                   ctx.putImageData(imageData, 0, 0);
                   const base64 = offscreen.toDataURL("image/jpeg");
-                  build(base64);
+                  const pdf = build(base64);
+                  console.log(pdf);
+                  setPdf(pdf);
                 }
               }
             }
@@ -68,6 +75,7 @@ const PdfBuild = (props: Props) => {
           build
         </button>
       </div>
+      {pdf && <PdfView data={pdf} />}
     </div>
   );
 };

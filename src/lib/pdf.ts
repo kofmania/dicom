@@ -7,17 +7,9 @@ const build = (base64Image: string) => {
     format: "a4",
     hotfixes: ["px_scaling"],
   });
-  const { width, height } = doc.internal.pageSize;
-  doc.text("pdf text", 10, 50);
-  {
-    const imagePath = "/logo.png";
-    const prop = doc.getImageProperties(imagePath);
-    const [fitW, fitH] = fitToBox(width - 10 * 2, 50, prop.width, prop.height);
 
-    doc.addImage(imagePath, prop.fileType, 10, 100, fitW, fitH);
-    doc.rect(10, 100, width - 10 * 2, 50);
-    doc.rect(10, 100, fitW, fitH);
-  }
+  doc.text("pdf text", 10, 50);
+  addHeader(doc);
 
   // input dicom image
   {
@@ -26,7 +18,26 @@ const build = (base64Image: string) => {
     doc.addImage(base64Image, prop.fileType, 10, 200, prop.width, prop.height);
   }
 
-  doc.save(`${Date.now()}.pdf`);
+  doc.addPage();
+  addHeader(doc);
+
+  // doc.save(`${Date.now()}.pdf`);
+  const pdfUri = doc.output("bloburi");
+
+  return pdfUri;
+};
+
+const addHeader = (doc: jsPDF) => {
+  {
+    const { width, height } = doc.internal.pageSize;
+    const imagePath = "/logo.png";
+    const prop = doc.getImageProperties(imagePath);
+    const [fitW, fitH] = fitToBox(width - 10 * 2, 50, prop.width, prop.height);
+
+    doc.addImage(imagePath, prop.fileType, 10, 100, fitW, fitH);
+    doc.rect(10, 100, width - 10 * 2, 50);
+    doc.rect(10, 100, fitW, fitH);
+  }
 };
 
 export { build };
