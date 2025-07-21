@@ -28,7 +28,7 @@ const build = (base64Image: string) => {
 };
 
 const addHeader = (doc: jsPDF) => {
-  const { width, height } = doc.internal.pageSize;
+  const { width } = doc.internal.pageSize;
   const imagePath = "/logo.png";
   const prop = doc.getImageProperties(imagePath);
   const [fitW, fitH] = fitToBox(width - 10 * 2, 50, prop.width, prop.height);

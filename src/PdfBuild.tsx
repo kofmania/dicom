@@ -1,9 +1,4 @@
-import {
-  getEnabledElement,
-  getEnabledElementByViewportId,
-  getRenderingEngine,
-  Types,
-} from "@cornerstonejs/core";
+import { getRenderingEngine, Types } from "@cornerstonejs/core";
 import { build } from "./lib/pdf";
 import { useState } from "react";
 import PdfView from "./PdfView";

@@ -1,6 +1,4 @@
 import "./App.css";
-import DicomViewer from "./DicomViewer";
-import PdfBuild from "./PdfBuild";
 import PdfTool from "./PdfTool";
 
 function App() {
